@@ -1,0 +1,264 @@
+{
+  "info": {
+    "_postman_id": "1ec2804c-8d99-4466-9f61-aa358bd9325f",
+    "name": "Task Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33805954"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"blake\",\n    \"email\": \"blake@gmail.com\",\n    \"password\": \"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/auth/register",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"blake@gmail.com\",\n    \"password\": \"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/auth/login",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Task",
+      "item": [
+        {
+          "name": "get all user tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/tasks/my-tasks/?sortBy=createdAt&sortOrder=asc",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "my-tasks",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "dfdvdvd",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "2",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "completed",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get task by id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/tasks/253abe1a-fb2b-4bf8-8250-3751e972d03e",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "253abe1a-fb2b-4bf8-8250-3751e972d03e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update task",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Finish Testing of Task Module\",\n  \"description\": \"Write test docs for task module\",\n  \"dueDate\": \"2026-03-23\",\n  \"status\": \"IN_PROGRESS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/tasks/253abe1a-fb2b-4bf8-8250-3751e972d03e",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "253abe1a-fb2b-4bf8-8250-3751e972d03e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/tasks/366c8ef8-6a9b-41c3-9480-7f8a56470f6a",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "366c8ef8-6a9b-41c3-9480-7f8a56470f6a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create task",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Finish Testing of Task Module\",\n  \"description\": \"Write test docs for task module\",\n  \"dueDate\": \"2026-03-22\",\n  \"status\": \"IN_PROGRESS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://task-management-server-lime-one.vercel.app/api/v1/tasks/add-task/",
+              "protocol": "https",
+              "host": [
+                "task-management-server-lime-one",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tasks",
+                "add-task",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
