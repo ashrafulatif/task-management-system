@@ -1,8 +1,10 @@
 import { catchAsync } from "@/shared/catchAsync";
 import { Request, Response } from "express";
 import { sendResponse } from "@/shared/sendResponse";
-import status from "http-status";
+import httpStatus from "http-status";
 import { TaskService } from "./task.service";
+import paginationAndSortgHelper from "@/utils/paginationAndSorting";
+import { TaskStatus } from "../../../generated/prisma/enums";
 
 const createTask = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
@@ -14,7 +16,7 @@ const createTask = catchAsync(async (req: Request, res: Response) => {
   const result = await TaskService.createTask({ ...payload, userId });
 
   sendResponse(res, {
-    statusCode: status.CREATED,
+    statusCode: httpStatus.CREATED,
     success: true,
     message: "Task created successfully",
     data: result,
@@ -23,13 +25,34 @@ const createTask = catchAsync(async (req: Request, res: Response) => {
 
 const getUserAllTasks = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
-  const result = await TaskService.getUserAllTasks(userId as string);
+
+  const { search, status } = req.query;
+
+  const searchString = typeof search === "string" ? search : undefined;
+  const statusValue =
+    typeof status === "string" ? status.toUpperCase() : undefined;
+  //pagination
+  const { page, limit, skip, sortBy, sortOrder } = paginationAndSortgHelper(
+    req.query,
+  );
+
+  const result = await TaskService.getUserAllTasks({
+    userId: userId as string,
+    searchString,
+    status: statusValue as TaskStatus | undefined,
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+  });
 
   sendResponse(res, {
-    statusCode: status.OK,
+    statusCode: httpStatus.OK,
     success: true,
     message: "Tasks retrieved successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 
@@ -39,7 +62,7 @@ const getTaskById = catchAsync(async (req: Request, res: Response) => {
   const result = await TaskService.getTaskById(id as string, userId as string);
 
   sendResponse(res, {
-    statusCode: status.OK,
+    statusCode: httpStatus.OK,
     success: true,
     message: "Task retrieved successfully",
     data: result,
@@ -57,7 +80,7 @@ const updateTask = catchAsync(async (req: Request, res: Response) => {
   );
 
   sendResponse(res, {
-    statusCode: status.OK,
+    statusCode: httpStatus.OK,
     success: true,
     message: "Task updated successfully",
     data: result,
@@ -70,7 +93,7 @@ const deleteTask = catchAsync(async (req: Request, res: Response) => {
   const result = await TaskService.deleteTask(id as string, userId as string);
 
   sendResponse(res, {
-    statusCode: status.OK,
+    statusCode: httpStatus.OK,
     success: true,
     message: "Task deleted successfully",
     data: result,

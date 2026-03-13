@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { TaskStatus } from "../../../generated/prisma/enums";
 import { CreateTaskPayload, UpdateTaskPayload } from "./task.interface";
+import { Prisma } from "../../../generated/prisma/client";
 
 const parseAndValidateFutureDate = (value: string | Date) => {
   const date = new Date(value);
@@ -28,10 +29,69 @@ const createTask = async (payload: CreateTaskPayload & { userId: string }) => {
   });
 };
 
-const getUserAllTasks = async (userId: string) => {
-  return prisma.task.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
+const getUserAllTasks = async (payload: {
+  searchString?: string;
+  status?: TaskStatus;
+  userId: string;
+  page: number;
+  limit: number;
+  skip: number;
+  sortBy: string;
+  sortOrder: string;
+}) => {
+  const andConditions: Prisma.TaskWhereInput[] = [];
+
+  andConditions.push({
+    userId: payload.userId,
+  });
+
+  if (payload.searchString) {
+    andConditions.push({
+      OR: [
+        {
+          title: {
+            contains: payload.searchString,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: payload.searchString,
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
+  if (payload.status) {
+    andConditions.push({
+      status: payload.status,
+    });
+  }
+
+  const allowedSortFields = [
+    "createdAt",
+    "updatedAt",
+    "dueDate",
+    "title",
+    "status",
+  ];
+  const safeSortBy = allowedSortFields.includes(payload.sortBy)
+    ? payload.sortBy
+    : "createdAt";
+  const safeSortOrder: Prisma.SortOrder =
+    payload.sortOrder === "asc" ? "asc" : "desc";
+
+  const result = await prisma.task.findMany({
+    take: payload.limit,
+    skip: payload.skip,
+    where: {
+      AND: andConditions,
+    },
+    orderBy: {
+      [safeSortBy]: safeSortOrder,
+    },
     include: {
       user: {
         select: {
@@ -42,6 +102,22 @@ const getUserAllTasks = async (userId: string) => {
       },
     },
   });
+
+  const total = await prisma.task.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+
+  return {
+    data: result,
+    meta: {
+      page: payload.page,
+      limit: payload.limit,
+      total,
+      totalPages: Math.ceil(total / payload.limit),
+    },
+  };
 };
 
 const getTaskById = async (id: string, userId: string) => {
