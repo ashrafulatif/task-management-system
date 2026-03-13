@@ -4,7 +4,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.use("/task-management", TaskRoutes);
+router.use("/tasks", TaskRoutes);
 
 router.use("/auth", AuthRoutes);
 

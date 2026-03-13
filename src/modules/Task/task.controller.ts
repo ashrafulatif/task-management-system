@@ -1,3 +1,86 @@
+import { catchAsync } from "@/shared/catchAsync";
+import { Request, Response } from "express";
+import { sendResponse } from "@/shared/sendResponse";
+import status from "http-status";
+import { TaskService } from "./task.service";
+
+const createTask = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const userId = req.user?.id;
+
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+  const result = await TaskService.createTask({ ...payload, userId });
+
+  sendResponse(res, {
+    statusCode: status.CREATED,
+    success: true,
+    message: "Task created successfully",
+    data: result,
+  });
+});
+
+const getUserAllTasks = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const result = await TaskService.getUserAllTasks(userId as string);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Tasks retrieved successfully",
+    data: result,
+  });
+});
+
+const getTaskById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+  const result = await TaskService.getTaskById(id as string, userId as string);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Task retrieved successfully",
+    data: result,
+  });
+});
+
+const updateTask = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const userId = req.user?.id;
+  const result = await TaskService.updateTask(
+    id as string,
+    payload,
+    userId as string,
+  );
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Task updated successfully",
+    data: result,
+  });
+});
+
+const deleteTask = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+  const result = await TaskService.deleteTask(id as string, userId as string);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Task deleted successfully",
+    data: result,
+  });
+});
+
 export const TaskController = {
-    // Add controller methods here
-    };
+  createTask,
+  getTaskById,
+  updateTask,
+  deleteTask,
+  getUserAllTasks,
+};

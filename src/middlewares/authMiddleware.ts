@@ -1,28 +1,48 @@
 import { NextFunction, Request, Response } from "express";
-import { auth as betterAuth } from "../lib/auth";
 import { UserRole } from "../types/enums/UserRole";
+import { jwtUtils } from "@/utils/jwt";
+import config from "@/config";
 
 const authMiddileware = (...roles: UserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      //get the session
-      const session = await betterAuth.api.getSession({
-        headers: req.headers as any,
-      });
+      //get the token from cookies
+      const token = req.cookies?.accessToken as string | undefined;
 
-      if (!session) {
+      if (!token) {
         return res.status(401).json({
           success: false,
           message: "You are not authorized!",
         });
       }
 
+      const verified = jwtUtils.verifyToken(
+        token,
+        config.ACCESS_TOKEN_SECRET as string,
+      );
+
+      if (!verified.success || !verified.data) {
+        return res.status(401).json({
+          success: false,
+          message: "You are not authorized!",
+        });
+      }
+
+      const decoded = verified.data;
+
+      if (!decoded.userId || !decoded.email || !decoded.name || !decoded.role) {
+        return res.status(401).json({
+          success: false,
+          message: "You are not authorized!",
+        });
+      }
+
+      //set user info req.user
       req.user = {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-        role: session.user.role as string,
-        emailVerified: session.user.emailVerified,
+        id: decoded.userId,
+        email: decoded.email,
+        name: decoded.name,
+        role: decoded.role,
       };
 
       //check role
