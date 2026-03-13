@@ -48,7 +48,8 @@ function globalErrorHandler(
     const simplifiedError = handleZodError(err);
 
     statusCode = simplifiedError.statusCode as number;
-    errorMsg = simplifiedError.message;
+    errorMsg = simplifiedError.errorSources[0]?.message || simplifiedError.message;
+    errorDetails = undefined;
   }
   // Handle others errors
   else if (err instanceof Error && err.message) {
